@@ -29,7 +29,11 @@ ARGS = parser.parse_args()
 # Data Sources that need to be considered as singular
 FORCE_SINGULAR_LIST = ["net_attributes", "quotas"] 
 # Data Sources that need to be considered as plural
-FORCE_PLURAL_LIST = ["flexible_gpu_catalog", "load_balancer_vm_health"] 
+FORCE_PLURAL_LIST = ["flexible_gpu_catalog", "load_balancer_vm_health"]
+
+CONTENT_PATH = os.path.join(ARGS.template_directory, "Content")
+TEMPLATE_PATH = os.path.join(ARGS.template_directory, "Templates")
+INDEX_PATH = os.path.join(CONTENT_PATH, "index.md")
 
 class DataType(Enum):
     SINGULAR = auto()
@@ -361,24 +365,25 @@ def file_template(template, links, resource_name, data_type, input_field, output
 
 
 def main():
+
     provider_filename = '{}/provider.go'.format(ARGS.provider_directory)
     with io.open(provider_filename, 'r') as f:
         provider_file = f.read()
 
-    with io.open('{}/template_ressource.md'.format(ARGS.template_directory),
+    with io.open('{}/template_ressource.md'.format(TEMPLATE_PATH),
                  'r') as f:
         template_resource = f.read()
 
-    with io.open('{}/template_datasource.md'.format(ARGS.template_directory),
+    with io.open('{}/template_datasource.md'.format(TEMPLATE_PATH),
                  'r') as f:
         template_datasource = f.read()
 
-    with io.open('{}/template_datasources.md'.format(ARGS.template_directory),
+    with io.open('{}/template_datasources.md'.format(TEMPLATE_PATH),
                  'r') as f:
         template_datasources = f.read()
 
     resources = {}
-    with io.open('{}/resources.csv'.format(ARGS.template_directory), 'r',
+    with io.open('{}/resources.csv'.format(CONTENT_PATH), 'r',
                  newline='', encoding='utf-8') as csv_file:
         values = csv.reader(csv_file, delimiter=',')
         if not values:
@@ -388,7 +393,7 @@ def main():
                 resources[row[0]] = [x[1:] for x in row[1:]]
 
     links = {}
-    with io.open('{}/links.csv'.format(ARGS.template_directory), 'r',
+    with io.open('{}/links.csv'.format(CONTENT_PATH), 'r',
                  newline='', encoding='utf-8') as csv_file:
         values = csv.reader(csv_file, delimiter=',')
     
